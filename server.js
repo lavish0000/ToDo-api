@@ -24,6 +24,20 @@ app.get('/todos', function(req, res) {
     res.json(todos);
 });
 
+app.get('/todos/:id', function(req, res) {
+    var todoid = parseInt(req.params.id, 10);
+    var obj;
+    for(i = 0; i < todos.length; i++) {
+        if(todos[i].ID === todoid) {
+             obj = todos[i];
+        }
+    }
+    if (typeof obj == 'undefined') {
+        res.status(404).send();
+    } else
+        res.json(obj);
+});
+
 app.listen(PORT, function () {
     console.log('express port' + PORT);
 });
