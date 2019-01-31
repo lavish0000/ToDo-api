@@ -61,6 +61,46 @@ app.post('/todos', function (req, res) {
 
 });
 
+app.delete('/todos/:id', function(req, res) {
+    var todoid = parseInt(req.params.id, 10);
+    var obj = _.findWhere(todos, {id: todoid});
+    
+
+    if (typeof obj == 'undefined') {
+        res.status(404).send();
+    } else
+    todos = _.without(todos,obj);
+        res.json(obj);
+
+    });
+
+app.put('/todos/:id', function(req, res) {
+    var body = _.pick(req.body, 'description', 'completed');
+    var todoid = parseInt(req.params.id, 10);
+    var obj = _.findWhere(todos, {id: todoid});
+    let validAttributes = {};
+
+    if (!obj) {
+        return res.status(404).send();
+    }
+
+    if(body.hasOwnProperty('completed') && _.isBoolean(body.completed) ) {
+        validAttributes.completed = body.completed;
+    } else if(body.hasOwnProperty('completed')) {
+         return res.status(404).send();
+    }
+
+    if(body.hasOwnProperty('description') && _.isBoolean(body.completed) ) {
+        validAttributes.description = body.description;
+    } else if(body.hasOwnProperty('completed') && _.isString(body.description) && body.description.trim().length > 0) {
+         return res.status(404).send();
+    }
+    _.extend(obj,validAttributes);
+    res.json(obj);
+
+
+});    
+
 app.listen(PORT, function () {
     console.log('express port ' + PORT);
 });
