@@ -27,11 +27,36 @@ app.get('/', function(req, res) {
     res.send('todo api root');
 });
 app.get('/todos', function(req, res) {
-    res.json(todos);
+    var queryParams = req.query;
+    var filteredTodos = todos;
+
+
+    if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+        filteredTodos = _.where(filteredTodos, {completed: true});
+    } else if ((queryParams.hasOwnProperty('completed') && queryParams.completed === 'false')) {
+        filteredTodos = _.where(filteredTodos, {completed: false});
+    }
+
+
+
+    if (queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
+        filteredTodos = _.filter(filteredTodos, function (todo) {
+            return todo.description.toLowerCase().indexOf(queryParams.q.toLowerCase()) >-1;
+        });
+    } 
+    res.json(filteredTodos);
 });
 
+
+
+
+
+
+
+
 app.get('/todos/:id', function(req, res) {
-    var todoid = parseInt(req.params.id, 10);
+    
+        var todoid = parseInt(req.params.id, 10);
     var obj = _.findWhere(todos, {id: todoid});
     // var obj;
     // for(i = 0; i < todos.length; i++) {
