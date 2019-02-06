@@ -21,7 +21,7 @@ if (env === 'production') {
       
     
       // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
-      operatorsAliases: false
+      //operatorsAliases: false
 });
 }
 
