@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
    return sequelize.define('todo', {
-        descriptionS: {
+        description: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {

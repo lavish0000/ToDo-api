@@ -1,6 +1,14 @@
 var Sequelize = require('sequelize');
 const mysql = require('mysql');
-var sequelize = new Sequelize('todo-api', 'root', 'emilence', {
+var env = process.env.NODE_ENV || 'development';
+var sequelize;
+
+if (env === 'production') {
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
+        dialect: 'postgres'
+    });
+} else {
+    sequelize = new Sequelize('todo-api', 'root', 'emilence', {
     'dialect': 'mysql',
     pool: {
         max: 5,
@@ -15,6 +23,12 @@ var sequelize = new Sequelize('todo-api', 'root', 'emilence', {
       // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
       operatorsAliases: false
 });
+}
+
+
+
+
+
 
 var db = {};
 
