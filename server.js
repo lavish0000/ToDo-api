@@ -235,22 +235,27 @@ app.post('/users/login', function (req, res) {
   var body = _.pick(req.body, 'email', 'password')
   //   body.email = body.email.trim()
   // body.password = body.password.trim()
-  db.users
-    .findOne({
-      where: {
-        email: body.email
-      }
-    })
-    .then(
-      useremail => {
-        if (!useremail || !bcrypt.compareSync(body.password, useremail.get('password_hash'))) {
-          return res.status(401).send();
-        }
 
-        res.json(useremail.toPublicJSON())
-      },
-      e => res.res.status(500).json(e)
-    )
+
+  db.user.authenticate(body)
+  .then( user => res.json(user.toPublicJSON()), 
+  () => res.status(401).send())
+  // db.users
+  //   .findOne({
+  //     where: {
+  //       email: body.email
+  //     }
+  //   })
+  //   .then(
+  //     useremail => {
+  //       if (!useremail || !bcrypt.compareSync(body.password, useremail.get('password_hash'))) {
+  //         return res.status(401).send();
+  //       }
+
+  //       res.json(useremail.toPublicJSON())
+  //     },
+  //     e => res.res.status(500).json(e)
+  //   )
 })
 
 db.sequelize.sync().then(function () {
