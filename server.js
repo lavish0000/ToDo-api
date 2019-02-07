@@ -235,10 +235,20 @@ app.post('/users/login', function (req, res) {
   var body = _.pick(req.body, 'email', 'password')
   //   body.email = body.email.trim()
   // body.password = body.password.trim()
+  
 
-  db.users
-    .authenticate(body)
-    .then(user => res.json(user.toPublicJSON()), () => res.status(401).send())
+  db.users.authenticate(body).then(
+    user => {
+      var token = user.generateToken('authentication')
+      if (token) {
+        res.header('awth', token).json(user.toPublicJSON())
+      } else {
+        res.status(401).send()
+      }
+    },
+    () => res.status(401).send()
+  )
+
   // db.users
   //   .findOne({
   //     where: {
