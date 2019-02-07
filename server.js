@@ -236,10 +236,9 @@ app.post('/users/login', function (req, res) {
   //   body.email = body.email.trim()
   // body.password = body.password.trim()
 
-
-  db.user.authenticate(body)
-  .then( user => res.json(user.toPublicJSON()), 
-  () => res.status(401).send())
+  db.users
+    .authenticate(body)
+    .then(user => res.json(user.toPublicJSON()), () => res.status(401).send())
   // db.users
   //   .findOne({
   //     where: {
