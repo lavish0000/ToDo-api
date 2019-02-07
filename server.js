@@ -1,6 +1,7 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 var _ = require('underscore')
+var bcrypt = require('bcrypt')
 var db = require('./db.js')
 var app = express()
 var PORT = process.env.PORT || 3000
@@ -106,7 +107,7 @@ app.get('/todos/:id', function (req, res) {
 
 app.post('/todos', function (req, res) {
   var body = _.pick(req.body, 'description', 'completed')
-  body.description = body.description.trim()
+  // body.description = body.description.trim()
 
   db.todo
     .create(body)
@@ -208,9 +209,9 @@ app.put('/todos/:id', function (req, res) {
 
 app.post('/users', function (req, res) {
   var body = _.pick(req.body, 'email', 'password')
-//   body.email = body.email.trim()
+  //   body.email = body.email.trim()
   body.password = body.password.trim()
-  
+
   db.users
     .create(body)
     .then(todo => {
@@ -229,6 +230,27 @@ app.post('/users', function (req, res) {
   // body.id = todoNextId++;
   // todos.push(body);
   // res.json(body);
+})
+app.post('/users/login', function (req, res) {
+  var body = _.pick(req.body, 'email', 'password')
+  //   body.email = body.email.trim()
+  // body.password = body.password.trim()
+  db.users
+    .findOne({
+      where: {
+        email: body.email
+      }
+    })
+    .then(
+      useremail => {
+        if (!useremail || !bcrypt.compareSync(body.password, useremail.get('password_hash'))) {
+          return res.status(401).send();
+        }
+
+        res.json(useremail.toPublicJSON())
+      },
+      e => res.res.status(500).json(e)
+    )
 })
 
 db.sequelize.sync().then(function () {
