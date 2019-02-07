@@ -185,31 +185,55 @@ app.put('/todos/:id', function (req, res) {
   //   _.extend(obj, validAttributes)
   //   res.json(obj)
 
-  db.todo
-    .findById(todoId)
-    .then(
-      function (todo) {
-        if (todo) {
-          return todo.update(attributes)
-        } else {
-          res.status(404).send()
-        }
-      },
-      function () {
-        res.status(500).send()
+  db.todo.findById(todoid).then(
+    function (todo) {
+      if (todo) {
+        todo.update(attributes).then(
+          function (todo) {
+            res.json(todo.toJSON())
+          },
+          function (e) {
+            res.status(400).json(e)
+          }
+        )
+      } else {
+        res.status(404).send()
       }
-    )
-    .then(
-      function (todo) {
-        res.json(todo.toJSON())
-      },
-      function (e) {
-        res.status(400).json(e)
-      }
-    )
+    },
+    function () {
+      res.status(500).send()
+    }
+  )
 })
 
-db.sequelize.sync().then(function () {
+app.post('/users', function (req, res) {
+  var body = _.pick(req.body, 'email', 'password')
+//   body.email = body.email.trim()
+  body.password = body.password.trim()
+  
+  db.users
+    .create(body)
+    .then(todo => {
+      console.log('row inserted')
+      res.json(todo.toPublicJSON())
+    })
+    .catch(e => res.status(400).json(e))
+
+  // console.log('description ' + body.description);
+
+  // if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+  //     return res.status(400).send();
+  // }
+  // body.description = body.description.trim();
+
+  // body.id = todoNextId++;
+  // todos.push(body);
+  // res.json(body);
+})
+
+db.sequelize.sync({
+  force: true
+}).then(function () {
   app.listen(PORT, function () {
     console.log('express port ' + PORT)
   })
